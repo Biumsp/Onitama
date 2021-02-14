@@ -1,0 +1,28 @@
+# rgb
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+GREEN = (0, 255, 0)
+LGREEN = (205, 210, 106)
+DGREEN = (99, 110, 63)
+RGREEN = (133, 121, 69)
+GOTOGREEN = (130, 151, 105)
+WHITE = (255, 255, 255)
+SIENNA = (160, 82, 45)
+WHEAT = (245, 222, 179)
+BLACK = (0, 0, 0)
+GREY = (128, 128, 128)
+BREY = (148, 141, 183)
+PURPLE = (215, 73, 243)
+DOLIVE = (145, 140, 125)
+LOLIVE = (180, 175, 165)
+DLC = (181, 136, 99)
+LLC = (240, 217, 181)
+
+# Themes: [Lsquares, Dsquares, ValidMoves, ValidCapture, SelectedPiece, LastMoveLight, LastMoveDark]
+THEMEB_STD = [WHEAT, SIENNA]
+THEMEB_OLIVE = [LOLIVE, DOLIVE]
+THEMEB_SAD = [BREY, GREY]
+THEMEB_LICHESS = [LLC, DLC, LGREEN, RGREEN, DGREEN, LGREEN, RGREEN]
+
+# Themes Pieces: [Wpieces, Bpieces, Woutline, Boutline]
+THEMEP_STD = [WHITE, BLACK, BLACK, WHITE]
