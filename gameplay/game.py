@@ -8,9 +8,10 @@ import time
 STD_POSITION = Position("2404143444de2000103040abc", 1)
 
 class Game:
-    def __init__(self, position = STD_POSITION):
+    def __init__(self, DEPTH, position = STD_POSITION):
         WIN = pygame.display.set_mode((WIDTH, HEIGHT))
         self.win = WIN
+        self.depth = DEPTH
         self._init(position=position)
 
     def _update_history(self):
@@ -60,9 +61,11 @@ class Game:
     def _engine_play(self):
         if self.turn:
             pos = Position(self.board.bn_board, self.turn^1)
-            pos.find_best_move(7)
+            pos.find_best_move(self.depth)
             best_move = Position(pos.best_move, self.turn)
             self._init(best_move)
+            time.sleep(3)
+            self._is_win()
         else:
             pass
 

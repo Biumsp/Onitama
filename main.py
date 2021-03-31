@@ -13,10 +13,10 @@ def get_row_col_from_mouse(pos):
     col = x//SQUARE_SIZE
     return row, col
 
-def main():
+def main(DEPTH):
     run = True
     clock = pygame.time.Clock()
-    game = Game()
+    game = Game(DEPTH)
 
     while run:
         clock.tick(FPS)
@@ -55,4 +55,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    DEPTH = int(input('Select the opponent strength: input a number between 1 and 10\n'))
+    main(DEPTH)
