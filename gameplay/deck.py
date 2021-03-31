@@ -1,6 +1,6 @@
-from .card import Card
+from onitama.gameplay.card import Card
 import pygame
-from interface.constants import WIDTH_CARD, HEIGHT_CARD, HEIGHT, WIDTH_BOARD, COLOR_BACKGROUND_DECK, WIDTH, HEIGHT
+from onitama.interface.constants import WIDTH_CARD, HEIGHT_CARD, HEIGHT, WIDTH_BOARD, COLOR_BACKGROUND_DECK, WIDTH, HEIGHT
 
 class Deck:
     def __init__(self, win, cards):

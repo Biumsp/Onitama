@@ -1,4 +1,4 @@
-from interface.constants import CARDS_IMAGES, WIDTH_CARD, HEIGHT_CARD, HEIGHT, WIDTH_BOARD
+from onitama.interface.constants import CARDS_IMAGES, WIDTH_CARD, HEIGHT_CARD, HEIGHT, WIDTH_BOARD
 import pygame
 import copy
 

@@ -1,7 +1,7 @@
 import pygame
-from interface.constants import COLOR_LSQ, COLOR_LAST_MOVE_DARK, COLOR_DSQ, SQUARE_SIZE, ROWS, COLS, COLOR_LAST_MOVE
-from .piece import Piece
-from.deck import Deck
+from onitama.interface.constants import COLOR_LSQ, COLOR_LAST_MOVE_DARK, COLOR_DSQ, SQUARE_SIZE, ROWS, COLS, COLOR_LAST_MOVE
+from onitama.gameplay.piece import Piece
+from onitama.gameplay.deck import Deck
 import copy
 import numpy as np
 

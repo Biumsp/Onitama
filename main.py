@@ -1,7 +1,6 @@
 import pygame
-from interface.constants import WIDTH, HEIGHT, SQUARE_SIZE, WIDTH_BOARD, FPS, WIDTH_CARD
-from gameplay.game import Game
-from evaluation.evaluation import Position
+from onitama.interface.constants import WIDTH, HEIGHT, SQUARE_SIZE, WIDTH_BOARD, FPS, WIDTH_CARD
+from onitama.gameplay.game import Game
 import time
 import sys
 
@@ -58,6 +57,7 @@ def main(position, time_step = 0, WIN = 0):
 
 if __name__ == '__main__':
     try:    
+        from onitama.evaluation.position import Position
         position, turn = sys.argv[1], sys.argv[2]
         position = Position(position, turn)
         main.main(position)

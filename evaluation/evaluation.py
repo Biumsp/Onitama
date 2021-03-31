@@ -1,10 +1,5 @@
-import re
-import copy
-from '..\main.py' import *
 
-class Position():
-
-    cards = {
+cards = {
         "a" : ((0, 2), (0, -1)),
         "b" : ((-1, -1), (1, -1), (-2, 1), (2, 1)),
         "c" : ((-1, 1), (-2, 0), (1, -1)),
@@ -23,206 +18,152 @@ class Position():
         "p" : ((-1, 0), (1, 1), (1, -1))
     }
 
-    # Dicttionary of cards' names
-    cards_names = {
-        "a" : "Tiger",
-        "b" : "Dragon",
-        "c" : "Frog",
-        "d" : "Rabbit",
-        "e" : "Crab",
-        "f" : "Elephant",
-        "g" : "Goose",
-        "h" : "Rooster",
-        "i" : "Monkey",
-        "j" : "Mantis",
-        "k" : "Horse",
-        "l" : "Ox",
-        "m" : "Crane",
-        "n" : "Boar",
-        "o" : "Eel",
-        "p" : "Cobra"
-    }
+def privilege(pos):
+    """Evaluates the presence of cards with a distinctive move"""
 
-    def __init__(self, pos, turn, WIN = 0):
-        self.pos = pos
-        self.turn = turn
-        self.WIN = WIN
+    mark_privilege_0, mark_privilege_1 = [], []
 
-        self.pieces = []
-        self.cards  = []
-        self.divide()
-
-        self.next_pos = False
-        self.current_tree = {}
-        self.value = 0
-        self.evaluated = False
-
-        self.protection_mark = 0
-
-        self._display()
-        
-    def __str__(self):
-        return self.pos
-
+    all_cards = pos.cards[0] + pos.cards[1]
     
-    def _display(self):
-        if WIN:
-            main.main(self.pos, 100, self.WIN)
+    # Get all different possible moves, with repetitions
+    all_moves = [m for c in all_cards for m in cards[c]]
+
+    # Get all different moves
+    different_moves = list(set(all_moves))
+
+    # Define a dictionary of all different moves
+    dict_moves = {}
+
+    # Count occurencies, normalize them and update the dictionary
+    for m in different_moves:
+        dict_moves.update({m : (len(all_cards) - all_moves.count(m))/len(all_cards)})
+  
+    # Give a value to each card 
+    marks_cards = {}
+
+    for c in all_cards:
+        partial_mark = 0
+
+        for m in cards[c]:
+            partial_mark += (dict_moves[m])
+
+        marks_cards.update({c : partial_mark})
+
+    # Get the maximum mark that was given to a card
+    maximum_mark = max([marks_cards[i] for i in all_cards])
+
+    # Sort all cards by their overall mark
+    all_cards.sort(key = lambda x: marks_cards[x], reverse = True)
+
+    # Just a useful list
+    marks_privilege = [mark_privilege_0, mark_privilege_1]
+
+    # For all cards
+    for c in all_cards:
+
+        # Check if that card is in cards_0 or cards_1
+        for i in [0, 1]:
+            if c in pos.cards[i]:
+
+                # Add the normalized position of the card in the all_card list to the correct mark-variable
+                marks_privilege[i].append(marks_cards[c]/maximum_mark)
+
+    # Get the maximum mark that was given to a side
+    maximum_mark = max([sum(m) for m in marks_privilege])
+
+    # Return the two different marks
+    return sum(mark_privilege_0)/maximum_mark, sum(mark_privilege_1)/maximum_mark
 
 
-    def _get_next_pos(self):
-        """ Creates a list of legal next pos, ordered by value"""
-        
-        # =========================================================
-        # Get the list of possible positions
+def domination(pos):
+    """Evaluates how each side restrictes the other"""
+    
+    # Initiate variables
+    mark_domination_0, mark_domination_1 = 0, 0
+    
+    # Give a point for every piece y-position
+    for piece in pos.pieces[1]:
 
-        self.next_pos = []        
-        next_pos_str = []
+        # But give it only if the opposite king is restricted 
+        if int(piece[1]) <= int(pos.pieces[0][0][1]):
+            mark_domination_1 += int(piece[1])
 
-        for card in self.cards[self.turn][0:-1]:
-            for move in Position.cards[card]:
-                for piece in self.pieces[self.turn]:
+    # Give a point for every piece y-position
+    for piece in pos.pieces[0]:
 
-                    # Get actual piece position and modify it
-                    piece_position = [int(j) for j in piece]
-                    next_piece_position = [piece_position[0] + (2*self.turn - 1)*move[0], piece_position[1] + (2*self.turn - 1)*move[1]]
+        # But give it only if the opposite king is restricted 
+        if int(piece[1]) >= int(pos.pieces[1][0][1]):
+            mark_domination_0 += (4- int(piece[1]))
 
-                    # Discard the move if out of boundaries
-                    if next_piece_position[0] > 4 or next_piece_position[1] > 4 :
-                        continue
-                    elif next_piece_position[0] < 0 or next_piece_position[1] < 0 :
-                        continue
-
-                    # Discard the move if there's a piece of the same side that sqare 
-                    elif (str(next_piece_position[0]) + str(next_piece_position[1])) in self.pieces[self.turn]:
-                        # Also add 1 to the protection-mark 
-                        self.protection_mark += 1
-                        continue
-
-                    else :
-                        next_piece_position = (str(next_piece_position[0]) + str(next_piece_position[1])) 
-                        next_pos_str.append(self.rearrange(piece, next_piece_position, card))
-
-        # =========================================================
-        # Check if they are already in the current tree, otherwise add them
-
-        for pos_str in next_pos_str:
-            if pos_str in self.current_tree:
-                self.next_pos.append(self.current_tree[pos_str])
-            else:
-                p = Position(pos_str, self.turn^1, self.WIN)
-                self.next_pos.append(p)
-                self.current_tree.update({pos_str : p})
-        
-        self._order_next_pos()
+    # Normalize by the maximum you can get
+    return mark_domination_0/15, mark_domination_1/15
 
 
-    def _order_next_pos(self):
-        for p in self.next_pos:
-            p._static_evaluation()
+def centrality(pos):
+    """Evaluates how central the pieces of each side are"""
+    
+    # Initiate variables
+    centrality_mark_0, centrality_mark_1 = 0, 0
 
-        self.next_pos.sort(key = lambda p: p.value, reverse = self.turn)
+    # Give a mark to every piece
+    for piece in pos.pieces[0]:
 
+        # The more central the piece, the higher the mark
+        centrality_mark_0 += (2 - abs(2 - int(piece[0])))*(2 - abs(2 - int(piece[1])))
 
-    def _static_evaluation(self):
-        """Performs the static evaluation of the position"""
+    # Give a mark to every piece
+    for piece in pos.pieces[1]:
 
-        value = 0
+        # The more central the piece, the higher the mark
+        centrality_mark_1 += (2 - abs(2 - int(piece[0])))*(2 - abs(2 - int(piece[1])))
 
-        self.value = value
-
-
-    def evaluate(self, depth, alpha = float('-inf'), beta = float('inf')):
-        """Recursive evaluation using minmax with pruning"""
-
-        # In theory this is never executed 
-        if depth == 0:
-
-            print('Error: "evaluate" called with depth = 0')
-
-            # We know there is this value because the position comes 
-            # from a list ordered by the static evaluations
-            return self.value
-
-        if not self.next_pos:
-            self._get_next_pos()
-
-        if depth == 1:
-            return self.next_pos[0].value
-
-        if self.turn:
-            maxEval = float('-inf')
-
-            for p in self.next_pos:
-                eval = p.evaluate(depth - 1, alpha, beta)
-                maxEval = max(maxEval, eval)
-                alpha = max(alpha, eval)
-                if beta <= alpha:
-                    break
-            
-            return maxEval
-
-        else:
-            minEval = float('inf')
-
-            for p in self.next_pos:
-                eval = p.evaluate(depth - 1, alpha, beta)
-                minEval = min(minEval, eval)
-                beta = min(beta, eval)
-                if beta <= alpha:
-                    break
-            
-            return minEval
+    # Normalize by the number of pieces of each side (we want an intensive parameter)
+    centrality_mark_0 *= 1/len(pos.pieces[0])
+    centrality_mark_1 *= 1/len(pos.pieces[1])
+    
+    # Divide by 4 for normalization
+    return centrality_mark_0/4, centrality_mark_1/4
 
 
-    def divide(self):
-        """Divides a position-string in lists of cards and pieces"""
+def evaluate_pos(pos):
+    """Evaluates a position and returns the mark"""
 
-        # Using REGEX to group the position-string in substrings
-        r = re.compile(r'(\d+)(\D+)(\d+)(\D+)')
-        pieces_0, cards_0, pieces_1, cards_1 = r.match(self.pos).group(1,2,3,4)
+    if not pos.next_pos:
+        pos._get_next_pos()
 
-        # Creating the correct lists from the substrings
-        pieces_0 = re.findall('..',pieces_0)
-        pieces_1 = re.findall('..',pieces_1)
-        cards_0 = list(cards_0)
-        cards_1 = list(cards_1)
+    mark = 0
 
-        self.pieces = [pieces_0, pieces_1]
-        self.cards  = [cards_0, cards_1]
+    mark_material = [(len(pos.pieces[0])-1)/4, (len(pos.pieces[1])-1)/4]
+    #print("\nMark", mark, "Mark_Material", mark_material)
 
+    mark_centrality = centrality(pos)
+    #print("Mark", mark, "Mark_Centrality", mark_centrality)
+    mark += ((1.25 - mark_material[0])*mark_centrality[1] - (1.25 - mark_material[1])*mark_centrality[0])
 
-    def rearrange(self, old_piece_pos, new_piece_pos, card):
-        """Rearrange the parts of the position-string"""
+    mark_domination = domination(pos)
+    #print("Mark", mark, "Mark_Domination", mark_domination)
+    mark += (mark_domination[1]*(1.25 - mark_material[0]) - mark_domination[0]*(1.25 - mark_material[1]))
 
-        # Create internal variables
-        pieces_i = copy.deepcopy(self.pieces)
-        cards_i = copy.deepcopy(self.cards)
+    if mark != 0:
+        mark_privilege = privilege(pos)
+        mark_privilege = (mark_privilege[1]*(1.25 - mark_material[0]) - mark_privilege[0]*(1.25 - mark_material[1]))/2
+        #print("Temporary_Mark", mark, "Mark_Privilege", mark_privilege)
 
-        pieces_i[self.turn].remove(old_piece_pos)
+        if mark_privilege != 0 :
+            exponent = int(mark/mark_privilege > 0)
+            exponent = -1 + 2*exponent
+            mark *= (1 + abs(mark_privilege))**exponent
 
-        # Checks if the moving piece is the king
-        if old_piece_pos == self.pieces[self.turn][0]:
-            pieces_i[self.turn].sort(key = lambda x: int(x))
-            pieces_i[self.turn].insert(0, new_piece_pos)
+    elif abs(mark) <= 0.45 :
+        # And if the best pos.turn is not the one with the move
+        if (mark > 0) != pos.turn :
+            # Return half the mark
+            mark *= 0.5
 
-        else:
-            pieces_i[self.turn].append(new_piece_pos)
-            pieces_i[self.turn].sort(key = lambda x: int(x))
+    # Round the mark
+    mark = round(mark, 1)
 
-        if new_piece_pos == pieces_i[self.turn^1][0]:
-            # If the opposite king was captured set his value to 99
-            pieces_i[self.turn^1][0] = '99'
+    if abs(mark) == 0:
+        mark = 0
 
-        else:
-            try :
-                pieces_i[self.turn^1].remove(new_piece_pos)
-
-            except ValueError:
-                pass
-
-        # Now take the used card and give it to the other side
-        cards_i[self.turn].remove(card)
-        cards_i[self.turn^1].append(card)
-
-        return "".join(pieces_i[0] + cards_i[0] + pieces_i[1] + cards_i[1])
+    return mark

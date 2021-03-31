@@ -1,9 +1,9 @@
 import pygame
-from interface.constants import WIDTH_BOARD, HEIGHT_BOARD, COLOR_SELECTED_PIECE, PURPLE,COLOR_VALID_CAPTURE, COLOR_VALID_MOVES, WIDTH, HEIGHT, SQUARE_SIZE, DRAW_VALID_MOVES, SIZE_VALID_MOVES
-from .constants import STD_CARDS, STD_POSITION
-from .board import Board
-from .deck import Deck
-
+from onitama.interface.constants import WIDTH_BOARD, HEIGHT_BOARD, COLOR_SELECTED_PIECE, PURPLE,COLOR_VALID_CAPTURE, COLOR_VALID_MOVES, WIDTH, HEIGHT, SQUARE_SIZE, DRAW_VALID_MOVES, SIZE_VALID_MOVES
+#from onitama.gameplay.constants import STD_CARDS, STD_POSITION
+from onitama.gameplay.board import Board
+from onitama.gameplay.deck import Deck
+STD_POSITION = 0
 class Game:
     def __init__(self, position = STD_POSITION, WIN = 0):
         if not WIN:
