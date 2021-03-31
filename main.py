@@ -1,7 +1,9 @@
 import pygame
 from interface.constants import WIDTH, HEIGHT, SQUARE_SIZE, WIDTH_BOARD, FPS, WIDTH_CARD
 from gameplay.game import Game
+from evaluation.evaluation import Position
 import time
+import sys
 
 pygame.init()
 pygame.display.set_caption('Onitama')
@@ -12,14 +14,18 @@ def get_row_col_from_mouse(pos):
     col = x//SQUARE_SIZE
     return row, col
 
-def main():
+def main(position, time_step = 0, WIN = 0):
     run = True
     clock = pygame.time.Clock()
-    game = Game()
+    game = Game(position, WIN)
 
     while run:
         clock.tick(FPS)
-        
+
+        if time_step:
+            if pygame.time.get_ticks() >= time_step:
+                break
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -50,4 +56,10 @@ def main():
     pygame.quit()
 
 
-main()
+if __name__ == '__main__':
+    try:    
+        position, turn = sys.argv[1], sys.argv[2]
+        position = Position(position, turn)
+        main.main(position)
+    except:
+        main.main()

@@ -1,6 +1,7 @@
 import pygame
 from interface.constants import COLOR_LSQ, COLOR_LAST_MOVE_DARK, COLOR_DSQ, SQUARE_SIZE, ROWS, COLS, COLOR_LAST_MOVE
 from .piece import Piece
+from.deck import Deck
 import copy
 import numpy as np
 
@@ -18,11 +19,11 @@ class Board:
                     [0, 0, 0, 0, 0], 
                     ["w", "w", "W", "w", "w"]]
 
-    def __init__(self, win, deck):
+    def __init__(self, win, deck, position = 0):
         self.win = win
         self.deck = deck
 
-        self._create_board()
+        self._create_board(position)
         self._update()
 
     def __repr__(self):
@@ -115,8 +116,12 @@ class Board:
                     return True
         return False
 
-    def _create_board(self):
-        self.board = Board.initial_board
+    def _create_board(self, position = 0):
+        if position:
+            self.board = self._to_board(position)
+        else: 
+            self.board = Board.initial_board
+
         for row in range(ROWS):
             for col in range(COLS):
                 if self.board[row][col] == 0:
@@ -131,6 +136,36 @@ class Board:
                 elif self.board[row][col] == "W":
                     self.board[row][col] = Piece(row, col, 0, self.win)
                     self.board[row][col].make_king()
+
+    def _to_board(self, position):
+        board =  [[0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0], 
+                  [0, 0, 0, 0, 0], 
+                  [0, 0, 0, 0, 0], 
+                  [0, 0, 0, 0, 0]]
+
+        black_pieces = position.pieces[0]
+        white_pieces = position.pieces[1]
+        for i in range(len(black_pieces)):
+            if i == 0:
+                if black_pieces[i] == '99':
+                    continue
+                else:
+                    board[4 - int(black_pieces[i][1])][int(black_pieces[i][0])] = 'B'
+            else:
+                board[4 - int(black_pieces[i][1])][int(black_pieces[i][0])] = 'b'
+
+        for i in range(len(white_pieces)):
+            if i == 0:
+                if white_pieces[i] == '99':
+                    continue
+                else:
+                    board[4 - int(white_pieces[i][1])][int(white_pieces[i][0])] = 'W'
+            else:
+                board[4 - int(white_pieces[i][1])][int(white_pieces[i][0])] = 'w'
+
+        return board
+
 
     def draw(self):
             self._draw_squares()

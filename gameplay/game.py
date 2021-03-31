@@ -1,15 +1,17 @@
 import pygame
 from interface.constants import WIDTH_BOARD, HEIGHT_BOARD, COLOR_SELECTED_PIECE, PURPLE,COLOR_VALID_CAPTURE, COLOR_VALID_MOVES, WIDTH, HEIGHT, SQUARE_SIZE, DRAW_VALID_MOVES, SIZE_VALID_MOVES
-from .constants import STD_CARDS
+from .constants import STD_CARDS, STD_POSITION
 from .board import Board
 from .deck import Deck
 
 class Game:
-    def __init__(self, cards = STD_CARDS):
-        WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+    def __init__(self, position = STD_POSITION, WIN = 0):
+        if not WIN:
+            WIN = pygame.display.set_mode((WIDTH, HEIGHT))
         self.win = WIN
 
-        self.cards = cards
+        self.position = position
+        self.cards = self._to_cards(self.position)
         self._init()
 
     def _update_history(self):
@@ -24,7 +26,7 @@ class Game:
         self.selected_piece = None
         self.selected_card = None
         self.deck = Deck(self.win, self.cards)
-        self.board = Board(self.win, self.deck)
+        self.board = Board(self.win, self.deck, self.position)
         self.turn = 0
         self.valid_moves = []
         self.sym_game = self.deck.sym_deck
@@ -63,6 +65,11 @@ class Game:
             self._draw_win()
             pygame.display.update()
             pygame.time.delay(10000)
+
+    def _to_cards(self, position):
+        black_cards = position.cards[0]
+        white_cards = position.cards[1]
+        return [white_cards, black_cards]
 
     def _draw_win(self):
         y, x = HEIGHT_BOARD//2, WIDTH_BOARD//2
