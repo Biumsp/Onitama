@@ -1,6 +1,5 @@
 import re
 import copy
-from onitama.main import get_row_col_from_mouse, main
 from onitama.evaluation.evaluation import evaluate_pos
 
 class Position():
@@ -24,10 +23,9 @@ class Position():
         "p" : ((-1, 0), (1, 1), (1, -1))
     }
 
-    def __init__(self, pos, turn, current_tree = {}, WIN = 0):
+    def __init__(self, pos, turn,  current_tree = {}):
         self.pos = pos
         self.turn = turn
-        self.WIN = WIN
 
         self.pieces = []
         self.cards  = []
@@ -43,17 +41,10 @@ class Position():
         self.is_win = False
         self._is_win()
 
-        self.protection_mark = 0
+        self.protection_mark = 0        
 
-        self._display()
-        
     def __str__(self):
         return self.pos
-
-    
-    def _display(self):
-        if self.WIN:
-            main(self, 1000, self.WIN)
 
 
     def _get_next_pos(self):
@@ -96,7 +87,7 @@ class Position():
             if pos_str in self.current_tree:
                 self.next_pos.append(self.current_tree[pos_str])
             else:
-                p = Position(pos_str, self.turn^1, self.current_tree, self.WIN)
+                p = Position(pos_str, self.turn^1, self.current_tree)
                 self.next_pos.append(p)
                 self.current_tree.update({pos_str : p})
 
@@ -111,7 +102,8 @@ class Position():
     def _static_evaluation(self):
         """Performs the static evaluation of the position"""
         if not self.evaluated:
-            self.value = evaluate_pos(self)
+            #self.value = evaluate_pos(self)
+            self.value = 0
             self.evaluated = True
 
 

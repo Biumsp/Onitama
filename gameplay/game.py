@@ -1,13 +1,14 @@
 import pygame
 from onitama.interface.constants import WIDTH_BOARD, HEIGHT_BOARD, COLOR_SELECTED_PIECE, PURPLE,COLOR_VALID_CAPTURE, COLOR_VALID_MOVES, WIDTH, HEIGHT, SQUARE_SIZE, DRAW_VALID_MOVES, SIZE_VALID_MOVES
-#from onitama.gameplay.constants import STD_CARDS, STD_POSITION
 from onitama.gameplay.board import Board
 from onitama.gameplay.deck import Deck
-STD_POSITION = 0
+from onitama.evaluation.position import Position
+
+STD_POSITION = Position("2404143444de2000103040abc", 1)
+
 class Game:
-    def __init__(self, position = STD_POSITION, WIN = 0):
-        if not WIN:
-            WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+    def __init__(self, position = STD_POSITION):
+        WIN = pygame.display.set_mode((WIDTH, HEIGHT))
         self.win = WIN
 
         self.position = position
