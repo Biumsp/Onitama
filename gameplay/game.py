@@ -3,6 +3,7 @@ from onitama.interface.constants import WIDTH_BOARD, HEIGHT_BOARD, COLOR_SELECTE
 from onitama.gameplay.board import Board
 from onitama.gameplay.deck import Deck
 from onitama.evaluation.position import Position
+import time
 
 STD_POSITION = Position("2404143444de2000103040abc", 1)
 
@@ -10,10 +11,7 @@ class Game:
     def __init__(self, position = STD_POSITION):
         WIN = pygame.display.set_mode((WIDTH, HEIGHT))
         self.win = WIN
-
-        self.position = position
-        self.cards = self._to_cards(self.position)
-        self._init()
+        self._init(position=position)
 
     def _update_history(self):
         if self.semimove not in self.history:
@@ -23,7 +21,10 @@ class Game:
         self.actual_bn = self.history[self.semimove]
         self.board.board_from_bn(self.actual_bn)
 
-    def _init(self):
+    def _init(self, position = 0):
+        if position:
+            self.position = position
+            self.cards = self._to_cards(self.position)
         self.selected_piece = None
         self.selected_card = None
         self.deck = Deck(self.win, self.cards)
@@ -40,8 +41,8 @@ class Game:
     def _move(self, row, col):
         if self.selected_piece and (row, col) in self.valid_moves:
             self.last_move = [self.selected_piece.row, self.selected_piece.col, row, col]
-            self.board.move(self.selected_piece, row, col)
             self.deck.move(self.selected_card)
+            self.board.move(self.selected_piece, row, col)
             self._after_move()
             return True
         else:
@@ -55,6 +56,15 @@ class Game:
         self.valid_moves = []
         self.update()
         self._is_win()
+
+    def _engine_play(self):
+        if self.turn:
+            pos = Position(self.board.bn_board, self.turn^1)
+            pos.find_best_move(7)
+            best_move = Position(pos.best_move, self.turn)
+            self._init(best_move)
+        else:
+            pass
 
     def _is_win(self):
         if self.board.winner == 0:

@@ -45,34 +45,44 @@ class Board:
     def _make_bn_board(self):
         list_bn = []
 
-        to_find = "W"
-        for ii in range(self.wmaterial):
-            row, col = np.where(self.array_board == to_find)
-            piece = self.get_piece(row, col)
-            list_bn.append(piece.short_rc)
-
-            if ii == 0:
-                to_find = "w"
-
-        for c in self.deck.wcards:
-            list_bn.append(c.short_name)
-
-        to_find = "B"
-        for ii in range(self.bmaterial):
-            row, col = np.where(self.array_board == to_find)
-            piece = self.get_piece(row, col)
-            list_bn.append(piece.short_rc)
-            
-            if ii == 0:
-                to_find = "b"
+        for row in range(ROWS):
+            for col in range(COLS):
+                if self.array_board[row][col] == "B":
+                    list_bn.append(str(col)+str(4-row))
+        
+        for row in range(ROWS):
+            for col in range(COLS):
+                if self.array_board[row][col] == "b":
+                    coordinate = str(col)+str(4-row)
+                    if coordinate in list_bn:
+                        continue
+                    else:
+                        list_bn.append(coordinate)
 
         for c in self.deck.bcards:
+            list_bn.append(c.short_name)
+
+        for row in range(ROWS):
+            for col in range(COLS):
+                if self.array_board[row][col] == "W":
+                    list_bn.append(str(col)+str(4-row))
+        
+        for row in range(ROWS):
+            for col in range(COLS):
+                if self.array_board[row][col] == "w":
+                    coordinate = str(col)+str(4-row)
+                    if coordinate in list_bn:
+                        continue
+                    else:
+                        list_bn.append(coordinate)
+
+        for c in self.deck.wcards:
             list_bn.append(c.short_name)
 
         self.bn_board = "".join(list_bn)
 
     def _make_array_board(self):
-        self.array_board = Board.background
+        self.array_board = copy.deepcopy(Board.background)
         for row in range(ROWS):
             for col in range(COLS): 
                 piece = self.board[row][col]

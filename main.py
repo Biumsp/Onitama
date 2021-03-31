@@ -20,6 +20,9 @@ def main():
 
     while run:
         clock.tick(FPS)
+        if game.turn:
+            game._engine_play()
+            continue
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
