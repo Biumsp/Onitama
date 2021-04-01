@@ -5,10 +5,8 @@ from onitama.gameplay.deck import Deck
 from onitama.evaluation.position import Position
 import time
 
-STD_POSITION = Position("2404143444de2000103040abc", 1)
-
 class Game:
-    def __init__(self, DEPTH, position = STD_POSITION):
+    def __init__(self, DEPTH, position):
         WIN = pygame.display.set_mode((WIDTH, HEIGHT))
         self.win = WIN
         self.depth = DEPTH
@@ -64,7 +62,6 @@ class Game:
             pos.find_best_move(self.depth)
             best_move = Position(pos.best_move, self.turn)
             self._init(best_move)
-            time.sleep(3)
             self._is_win()
         else:
             pass
@@ -76,6 +73,7 @@ class Game:
             self.winner = "Black"
 
         if self.winner:
+            time.sleep(3)
             self._draw_win()
             pygame.display.update()
             pygame.time.delay(10000)
