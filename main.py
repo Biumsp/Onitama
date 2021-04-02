@@ -3,6 +3,7 @@ from onitama.interface.constants import WIDTH, HEIGHT, SQUARE_SIZE, WIDTH_BOARD,
 from onitama.gameplay.game import Game
 from onitama.evaluation.position import Position
 import time
+from random import randint
 import sys
 
 filler = "-"*100
@@ -46,7 +47,7 @@ def main(DEPTH, initial_position, engine, ENGINE_SIDE):
 
         if engine:
             if game.turn == ENGINE_SIDE:
-                game._engine_play()
+                game.engine_play()
                 pygame.event.get()
                 game.update()
                 continue
@@ -90,7 +91,7 @@ def get_user_inputs():
     else:
         condition = True
         while condition:
-            random = input("Random game? (y/n)\n")
+            random = input("\nRandom game? (y/n)\n")
 
             if random == 'y':
                 initial_position = get_initial_position(random = True)
@@ -125,7 +126,7 @@ def get_game_info():
             condition = False
     
     condition = True
-    ENGINE_SIDE = 0
+    ENGINE_SIDE = 1
     if engine:
         while condition :
             info_engine = input("\nDo you want to play white? (y/n)\n")
@@ -142,7 +143,19 @@ def get_game_info():
 
 
 def random_cards(b, w):
-    return ['d', 'e'], ['a', 'b', 'c']
+
+    cards = list(cards_names.keys())
+    bcards = []
+    wcards = []
+    for jj in range(5):
+        ii = randint(0, 15-jj)
+        if jj < 2:
+            bcards.append(cards[ii])
+        else:
+            wcards.append(cards[ii])
+        cards.pop(ii)
+
+    return bcards, wcards
 
 def get_initial_position(random = False):
 

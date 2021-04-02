@@ -56,15 +56,22 @@ class Game:
         self.update()
         self._is_win()
 
-    def _engine_play(self):
-        if self.turn:
-            pos = Position(self.board.bn_board, self.turn^1)
-            pos.find_best_move(self.depth)
-            best_move = Position(pos.best_move, self.turn)
-            self._init(best_move)
-            self._is_win()
-        else:
-            pass
+    def _get_engine_move(self, old_pos, new_pos):
+        old_pieces_positions = old_pos.pieces[self.turn^1]
+        new_pieces_positions = new_pos.pieces[self.turn^1]
+
+        card = new_pos.cards[self.turn][-1]
+
+        for piece in old_pieces_positions:
+            if piece not in new_pieces_positions:
+                row, col = int(piece[1]), int(piece[0])
+
+        for piece in new_pieces_positions:
+            if piece not in old_pieces_positions:
+                move_row, move_col = int(piece[1]), int(piece[0])
+
+        row, move_row = 4-row, 4-move_row
+        return row, col, card, move_row, move_col
 
     def _is_win(self):
         if self.board.winner == 0:
@@ -171,11 +178,26 @@ class Game:
         self.valid_moves = []
         self.update()
 
-    def select_card(self, x, y):
-        card = self.deck.get_card(x, y, self.turn)
+    def select_card(self, x, y, card = None):
+        if not card:
+            card = self.deck.get_card(x, y, self.turn)
         self.wrong_selection()
         self.selected_card = card
 
     def change_turn(self):
         self.valid_moves = []
         self.turn = self.turn^1
+
+    def engine_play(self):
+        pos = Position(self.board.bn_board, self.turn^1)
+        pos.find_best_move(self.depth)
+        best_move = Position(pos.best_move, self.turn)
+
+        row, col, card, move_row, move_col = self._get_engine_move(pos, best_move)
+        for c in self.deck.all_cards:
+            if c.short_name == card:
+                card = c
+
+        self.select_card(0, 0, card = card)
+        self.select_piece(row, col)
+        self.select_piece(move_row, move_col)

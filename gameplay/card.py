@@ -1,6 +1,7 @@
 from onitama.interface.constants import CARDS_IMAGES, WIDTH_CARD, HEIGHT_CARD, HEIGHT, WIDTH_BOARD
 import pygame
 import copy
+import time 
 
 class Card:
 
@@ -78,7 +79,7 @@ class Card:
             y = HEIGHT-HEIGHT_CARD
 
         if index == 2:
-            image = pygame.transform.scale(self.image, (WIDTH_CARD*2//3, HEIGHT_CARD*2//3))
+            image = pygame.transform.scale(image, (WIDTH_CARD*2//3, HEIGHT_CARD*2//3))
             if not self.side:
                 y = HEIGHT-HEIGHT_CARD*2//3
 
