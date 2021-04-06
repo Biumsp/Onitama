@@ -136,15 +136,17 @@ def evaluate_pos(pos):
     mark_material = [(len(pos.pieces[0])-1)/4, (len(pos.pieces[1])-1)/4]
     #print("\nMark", mark, "Mark_Material", mark_material)
 
+    mark = 5*(mark_material[1] - mark_material[0])
+
     mark_centrality = centrality(pos)
     #print("Mark", mark, "Mark_Centrality", mark_centrality)
-    mark += ((1.25 - mark_material[0])*mark_centrality[1] - (1.25 - mark_material[1])*mark_centrality[0])
+    mark += 1.5*((1.25 - mark_material[0])*mark_centrality[1] - (1.25 - mark_material[1])*mark_centrality[0])
 
     mark_domination = domination(pos)
     #print("Mark", mark, "Mark_Domination", mark_domination)
-    mark += (mark_domination[1]*(1.25 - mark_material[0]) - mark_domination[0]*(1.25 - mark_material[1]))
+    mark += 1.5*(mark_domination[1]*(1.25 - mark_material[0]) - mark_domination[0]*(1.25 - mark_material[1]))
 
-    if mark != 0:
+    if mark != 0 and abs(mark) >= 0.45:
         mark_privilege = privilege(pos)
         mark_privilege = (mark_privilege[1]*(1.25 - mark_material[0]) - mark_privilege[0]*(1.25 - mark_material[1]))/2
         #print("Temporary_Mark", mark, "Mark_Privilege", mark_privilege)

@@ -136,7 +136,7 @@ class Position():
         # ======================================================================
         # Hyperparameter Alert: depth from which to order the positions
         # ======================================================================
-        if depth <= 5:
+        if depth <= 8:
             if not self.ordered_next_pos:
                 self._order_next_pos()
 
