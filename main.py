@@ -1,10 +1,17 @@
-import pygame
+from onitama.interface.printing import HiddenPrints
+with HiddenPrints():
+    import pygame
+
+if __name__ == '__main__':
+    from onitama.evaluation.constants import POOL
+
+from onitama.evaluation.position import Position
 from onitama.interface.constants import WIDTH, HEIGHT, SQUARE_SIZE, WIDTH_BOARD, FPS, WIDTH_CARD
 from onitama.gameplay.game import Game
-from onitama.evaluation.position import Position
 import time
 from random import randint
-import sys
+import sys, os
+
 
 filler = "-"*100
 big_filler = filler + "\n\n" + filler
@@ -47,7 +54,12 @@ def main(DEPTH, initial_position, engine, ENGINE_SIDE):
 
         if engine:
             if game.turn == ENGINE_SIDE:
+
+                t0 = time.process_time()
                 game.engine_play()
+                t1 = time.process_time()
+                print('\nEnlapsed in {:.2f} [s]'.format(t1 - t0))
+
                 pygame.event.get()
                 game.update()
                 continue
@@ -155,6 +167,7 @@ def random_cards(b, w):
             wcards.append(cards[ii])
         cards.pop(ii)
 
+    bcards, wcards = ['d', 'e'], ['a', 'b', 'c']
     return bcards, wcards
 
 def get_initial_position(random = False):

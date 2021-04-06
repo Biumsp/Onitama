@@ -1,6 +1,8 @@
 import re
 import copy
 from onitama.evaluation.evaluation import evaluate_pos
+from onitama.interface.printing import HiddenPrints
+import inspect
 
 class Position():
 
@@ -23,7 +25,7 @@ class Position():
         "p" : ((-1, 0), (1, 1), (1, -1))
     }
 
-    def __init__(self, pos, turn,  current_tree = {}):
+    def __init__(self, pos, turn, current_tree = {}, current_tree_set = set()):
         self.pos = pos
         self.turn = turn
 
@@ -33,6 +35,8 @@ class Position():
 
         self.next_pos = False
         self.current_tree = current_tree
+        self.current_tree_set = current_tree_set
+
         self.best_move = None
         self.value = 0
         self.evaluated = False
@@ -42,6 +46,7 @@ class Position():
         self._is_win()
 
         self.protection_mark = 0        
+
 
     def __str__(self):
         return self.pos
@@ -54,44 +59,62 @@ class Position():
         # Get the list of possible positions
 
         self.next_pos = []        
-        next_pos_str = []
 
-        for card in self.cards[self.turn][0:-1]:
-            for move in Position.cards[card]:
-                for piece in self.pieces[self.turn]:
+        args = [(card, move, piece) for card in self.cards[self.turn][0:-1]
+                for move in Position.cards[card] 
+                for piece in self.pieces[self.turn]]
 
-                    # Get actual piece position and modify it
-                    piece_position = [int(j) for j in piece]
-                    next_piece_position = [piece_position[0] + (2*self.turn - 1)*move[0], piece_position[1] + (2*self.turn - 1)*move[1]]
+        if POOL:
+            next_pos_str = POOL.map(self._parallel_get_next_pos, args)
+                              
+        else:
+            next_pos_str = []
+            for arg in args:
+                next_pos_str.append(self._parallel_get_next_pos(arg))
 
-                    # Discard the move if out of boundaries
-                    if next_piece_position[0] > 4 or next_piece_position[1] > 4 :
-                        continue
-                    elif next_piece_position[0] < 0 or next_piece_position[1] < 0 :
-                        continue
-
-                    # Discard the move if there's a piece of the same side that sqare 
-                    elif (str(next_piece_position[0]) + str(next_piece_position[1])) in self.pieces[self.turn]:
-                        # Also add 1 to the protection-mark 
-                        self.protection_mark += 1
-                        continue
-
-                    else :
-                        next_piece_position = (str(next_piece_position[0]) + str(next_piece_position[1])) 
-                        next_pos_str.append(self.rearrange(piece, next_piece_position, card))
+        next_pos_str = set(next_pos_str)
+        next_pos_str.remove(None)
 
         # =========================================================
         # Check if they are already in the current tree, otherwise add them
 
         for pos_str in next_pos_str:
-            if pos_str in self.current_tree:
+            if pos_str in self.current_tree_set:
                 self.next_pos.append(self.current_tree[pos_str])
             else:
-                p = Position(pos_str, self.turn^1, self.current_tree)
+                p = Position(pos_str, self.turn^1,
+                            current_tree=self.current_tree, 
+                            current_tree_set=self.current_tree_set)
                 self.next_pos.append(p)
                 self.current_tree.update({pos_str : p})
+                self.current_tree_set.add(pos_str)
 
 
+    def _parallel_get_next_pos(self, args):
+
+        card, move, piece = args
+
+        # Get actual piece position and modify it
+        piece_position = [int(j) for j in piece]
+        next_piece_position = [piece_position[0] + (2*self.turn - 1)*move[0], piece_position[1] + (2*self.turn - 1)*move[1]]
+
+        # Discard the move if out of boundaries
+        if next_piece_position[0] > 4 or next_piece_position[1] > 4 :
+            return
+        elif next_piece_position[0] < 0 or next_piece_position[1] < 0 :
+            return
+
+        # Discard the move if there's a piece of the same side that sqare 
+        elif (str(next_piece_position[0]) + str(next_piece_position[1])) in self.pieces[self.turn]:
+            # Also add 1 to the protection-mark 
+            self.protection_mark += 1
+            return
+
+        else :
+            next_piece_position = (str(next_piece_position[0]) + str(next_piece_position[1])) 
+            return self.rearrange(piece, next_piece_position, card)
+
+         
     def _order_next_pos(self):
         for p in self.next_pos:
             p._static_evaluation()
@@ -219,6 +242,11 @@ class Position():
 
 
     def find_best_move(self, depth):
+
+        if r'onitama\main.py' in inspect.stack()[-3].filename:
+            global POOL
+            from onitama.evaluation.constants import POOL
+
         self.evaluate(depth)
         self._order_next_pos()
         self.best_move = self.next_pos[0].pos
