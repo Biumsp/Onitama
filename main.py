@@ -1,4 +1,6 @@
-import pygame
+from onitama.interface.printing import HiddenPrints
+with HiddenPrints():
+    import pygame
 from onitama.interface.constants import WIDTH, HEIGHT, SQUARE_SIZE, WIDTH_BOARD, FPS, WIDTH_CARD
 from onitama.gameplay.game import Game
 from onitama.evaluation.position import Position
