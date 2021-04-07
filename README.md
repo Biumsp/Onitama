@@ -24,6 +24,7 @@ For more info about the virtual environments refer to the [official Python docs]
 ### Running the codes
 On windows:<br/>
 Games are started from the terminal. 
+- Rename the folder from whatever its name to **onitama** (e.g., **Onitama-v-0.1** ➝ **onitama**)
 - Open the terminal
 - Navigate to the parent directory of the repository (e.g., if the path of the repo is **C:\Desktop\onitama**, run `> cd C:\Desktop` in the terminal)
 - Run the **main.py** script of the package: `> python -m onitama.main`
