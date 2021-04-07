@@ -26,4 +26,4 @@ On windows:<br/>
 Games are started from the terminal. 
 - Open the terminal
 - Navigate to the parent directory of the repository (e.g., if the path of the repo is **C:\Desktop\onitama**, run `> cd C:\Desktop` in the terminal)
-- Run the **main.py** script of the package: `> python -m onitama.main'
+- Run the **main.py** script of the package: `> python -m onitama.main`
