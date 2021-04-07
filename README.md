@@ -7,7 +7,7 @@ The implemented features are:
 The engine uses a vanilla MinMax algorithm with alpha-beta pruning.
 
 ### Cloning this repository to your local machine
-You can clone this repository using the command `git clone https://github.com/Biumsp/Onitama.git` in the GIT bash or by downloading the zip file from this GitHub page.
+You can clone this repository using the command `$ git clone https://github.com/Biumsp/Onitama.git` in the GIT bash or by downloading the zip file from this GitHub page.
 Be sure to run the codes in a properly set virtual environment.
 
 ### Setting up the virtual environment
