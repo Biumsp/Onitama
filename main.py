@@ -49,7 +49,11 @@ def main(DEPTH, initial_position, engine, ENGINE_SIDE):
 
         if engine:
             if game.turn == ENGINE_SIDE:
+                t0 = time.process_time()
                 game.engine_play()
+                t1 = time.process_time()
+                print('\nEnlapsed in {:.2f} [s]'.format(t1 - t0))
+
                 pygame.event.get()
                 game.update()
                 continue
