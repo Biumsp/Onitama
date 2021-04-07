@@ -102,8 +102,7 @@ class Position():
     def _static_evaluation(self):
         """Performs the static evaluation of the position"""
         if not self.evaluated:
-            #self.value = evaluate_pos(self)
-            self.value = 0
+            self.value = evaluate_pos(self)
             self.evaluated = True
 
 
@@ -136,7 +135,7 @@ class Position():
         # ======================================================================
         # Hyperparameter Alert: depth from which to order the positions
         # ======================================================================
-        if depth <= 8:
+        if depth <= 2 or depth == 7:
             if not self.ordered_next_pos:
                 self._order_next_pos()
 
@@ -223,3 +222,6 @@ class Position():
         self._order_next_pos()
         self.best_move = self.next_pos[0].pos
         return self.best_move
+
+
+    #def evaluation_composition(self):

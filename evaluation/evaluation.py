@@ -82,14 +82,14 @@ def domination(pos):
     mark_domination_0, mark_domination_1 = 0, 0
     
     # Give a point for every piece y-position
-    for piece in pos.pieces[1]:
+    for piece in pos.pieces[1][1:]:
 
         # But give it only if the opposite king is restricted 
         if int(piece[1]) <= int(pos.pieces[0][0][1]):
             mark_domination_1 += int(piece[1])
 
     # Give a point for every piece y-position
-    for piece in pos.pieces[0]:
+    for piece in pos.pieces[0][1:]:
 
         # But give it only if the opposite king is restricted 
         if int(piece[1]) >= int(pos.pieces[1][0][1]):
@@ -136,7 +136,7 @@ def evaluate_pos(pos):
     mark_material = [(len(pos.pieces[0])-1)/4, (len(pos.pieces[1])-1)/4]
     #print("\nMark", mark, "Mark_Material", mark_material)
 
-    mark = 5*(mark_material[1] - mark_material[0])
+    mark = 2.5*(mark_material[1] - mark_material[0])
 
     mark_centrality = centrality(pos)
     #print("Mark", mark, "Mark_Centrality", mark_centrality)
@@ -144,7 +144,7 @@ def evaluate_pos(pos):
 
     mark_domination = domination(pos)
     #print("Mark", mark, "Mark_Domination", mark_domination)
-    mark += 1.5*(mark_domination[1]*(1.25 - mark_material[0]) - mark_domination[0]*(1.25 - mark_material[1]))
+    mark += 2.5*(mark_domination[1]*(1.25 - mark_material[0]) - mark_domination[0]*(1.25 - mark_material[1]))
 
     if mark != 0 and abs(mark) >= 0.45:
         mark_privilege = privilege(pos)
