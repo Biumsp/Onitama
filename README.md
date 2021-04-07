@@ -22,7 +22,7 @@ To install those libraries directly from the file you need to follow these steps
 For more info about the virtual environments refer to the [official Python docs](https://docs.python.org/3/library/venv.html)
 
 ### Running the codes
-On windows:<\b>
+On windows:<br/>
 Games are started from the terminal. 
 - Open the terminal
 - Navigate to the parent directory of the repository (e.g., if the path of the repo is **C:\Desktop\onitama**, run `> cd C:\Desktop` in the terminal)
