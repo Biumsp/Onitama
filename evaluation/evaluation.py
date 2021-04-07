@@ -125,7 +125,7 @@ def centrality(pos):
     return centrality_mark_0/4, centrality_mark_1/4
 
 
-def evaluate_pos(pos):
+def evaluate_pos(pos, composition = False):
     """Evaluates a position and returns the mark"""
 
     if not pos.next_pos:
@@ -136,7 +136,7 @@ def evaluate_pos(pos):
     mark_material = [(len(pos.pieces[0])-1)/4, (len(pos.pieces[1])-1)/4]
     #print("\nMark", mark, "Mark_Material", mark_material)
 
-    mark = 2.5*(mark_material[1] - mark_material[0])
+    mark = 2.5*(mark_material[1] - mark_material[0]) 
 
     mark_centrality = centrality(pos)
     #print("Mark", mark, "Mark_Centrality", mark_centrality)
@@ -168,4 +168,24 @@ def evaluate_pos(pos):
     if abs(mark) == 0:
         mark = 0
 
-    return mark
+    if composition:
+        marks_list  = []
+        labels_list = []
+
+        if pos.is_win:
+            pos._static_evaluation()
+            return marks_list, labels_list, pos.value
+
+        marks_list.append(round(mark, 1))
+        labels_list.append('Material')
+
+        marks_list.append(round(1.5*((1.25 - mark_material[0])*mark_centrality[1] - (1.25 - mark_material[1])*mark_centrality[0]),1))
+        labels_list.append('Centrality')
+
+        marks_list.append(round(2.5*(mark_domination[1]*(1.25 - mark_material[0]) - mark_domination[0]*(1.25 - mark_material[1])), 1))
+        labels_list.append('Domination')
+
+        return marks_list, labels_list, mark
+        
+    else:
+        return mark

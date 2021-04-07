@@ -36,7 +36,7 @@ class Position():
         self.next_pos = False
         self.current_tree = current_tree
         self.best_move = None
-        self.value = 0
+        self.value = False
         self.evaluated = False
         self.ordered_next_pos = False
 
@@ -96,7 +96,8 @@ class Position():
 
     def _order_next_pos(self):
         for p in self.next_pos:
-            p._static_evaluation()
+            if not p.evaluated:
+                p._static_evaluation()
         self.next_pos.sort(key = lambda p: p.value, reverse = self.turn)
         self.ordered_next_pos = True
 
@@ -129,12 +130,11 @@ class Position():
 
         # ======================================================================
         # Avoid the OS errors
-        
+
         if engine_playing:
             global cpu_time
 
             if time.process_time() >= cpu_time + 4:
-                print('Updating time')
                 pygame.event.get()
                 cpu_time = time.process_time()
 
@@ -240,8 +240,23 @@ class Position():
 
         self.evaluate(depth, engine_playing = engine_playing)
         self._order_next_pos()
-        self.best_move = self.next_pos[0].pos
+        self.best_move = self.next_pos[0]
         return self.best_move
 
 
-    #def evaluation_composition(self):
+    def evaluation_composition(self):
+        marks, labels, value = evaluate_pos(self, composition = True)
+
+        print()
+        print("-"*100)
+        if len(marks) > 0:
+            print ("{:<15} {:<10}".format('Mark', 'Value'))
+            print("-"*100)
+            print()
+
+            for m, l in zip(marks, labels):
+                print ("{:<15} {:<10}".format(l, m))
+
+        
+
+        print(f'\nTotal Value = {value}')

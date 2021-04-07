@@ -113,8 +113,14 @@ def get_user_inputs():
 
     engine, ENGINE_SIDE = get_game_info()
     if engine:
-        DEPTH = int(input('\nSelect the opponent strength: input a number between 1 and 10\n'))
-    
+        condition = True
+        while condition:
+            try :                
+                DEPTH = int(input('\nSelect the opponent strength: input a number between 1 and 10\n'))
+                condition = False
+            except:
+                pass
+            
     return DEPTH, initial_position, engine, ENGINE_SIDE
 
 

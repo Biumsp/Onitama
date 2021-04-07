@@ -191,7 +191,10 @@ class Game:
     def engine_play(self):
         pos = Position(self.board.bn_board, self.turn^1)
         pos.find_best_move(self.depth, engine_playing=True)
-        best_move = Position(pos.best_move, self.turn)
+        best_move = pos.best_move
+
+        #best_move.evaluation_composition()
+        print(f'Total Value = {best_move.value}')
 
         row, col, card, move_row, move_col = self._get_engine_move(pos, best_move)
         for c in self.deck.all_cards:
