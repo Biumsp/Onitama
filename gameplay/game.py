@@ -190,7 +190,7 @@ class Game:
 
     def engine_play(self):
         pos = Position(self.board.bn_board, self.turn^1)
-        pos.find_best_move(self.depth)
+        pos.find_best_move(self.depth, engine_playing=True)
         best_move = Position(pos.best_move, self.turn)
 
         row, col, card, move_row, move_col = self._get_engine_move(pos, best_move)

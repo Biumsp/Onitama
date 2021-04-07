@@ -1,6 +1,8 @@
 import re
 import copy
 from onitama.evaluation.evaluation import evaluate_pos
+import time
+import pygame
 
 class Position():
 
@@ -122,8 +124,21 @@ class Position():
         self.evaluated = True
 
     
-    def evaluate(self, depth, alpha = float('-inf'), beta = float('inf')):
+    def evaluate(self, depth, alpha = float('-inf'), beta = float('inf'), engine_playing = False):
         """Recursive evaluation using minmax with pruning"""
+
+        # ======================================================================
+        # Avoid the OS errors
+        
+        if engine_playing:
+            global cpu_time
+
+            if time.process_time() >= cpu_time + 4:
+                print('Updating time')
+                pygame.event.get()
+                cpu_time = time.process_time()
+
+        # ======================================================================
 
         if depth == 0 or self.is_win:
             self._static_evaluation()
@@ -135,14 +150,14 @@ class Position():
         # ======================================================================
         # Hyperparameter Alert: depth from which to order the positions
         # ======================================================================
-        if depth <= 2 or depth == 7:
+        if depth == 1 or depth == starting_depth:
             if not self.ordered_next_pos:
                 self._order_next_pos()
 
         if self.turn:
             maxEval = float('-inf')
             for p in self.next_pos:
-                eval = p.evaluate(depth - 1, alpha, beta)
+                eval = p.evaluate(depth - 1, alpha, beta, engine_playing)
                 maxEval = max(maxEval, eval)
                 alpha = max(alpha, eval)
                 if beta <= alpha:
@@ -154,7 +169,7 @@ class Position():
         else:
             minEval = float('inf')
             for p in self.next_pos:
-                eval = p.evaluate(depth - 1, alpha, beta)
+                eval = p.evaluate(depth - 1, alpha, beta, engine_playing)
                 minEval = min(minEval, eval)
                 beta = min(beta, eval)
                 if beta <= alpha:
@@ -217,8 +232,13 @@ class Position():
         return "".join(pieces_i[0] + cards_i[0] + pieces_i[1] + cards_i[1])
 
 
-    def find_best_move(self, depth):
-        self.evaluate(depth)
+    def find_best_move(self, depth, engine_playing = False):
+        global cpu_time, starting_depth
+        cpu_time = time.process_time()
+        starting_depth = depth
+
+
+        self.evaluate(depth, engine_playing = engine_playing)
         self._order_next_pos()
         self.best_move = self.next_pos[0].pos
         return self.best_move
