@@ -14,7 +14,7 @@ Be sure to run the codes in a properly set virtual environment.
 To use this repository on your local machine you need a properly set Python virtual environment (venv).
 All the needed libraries are listed in the `requirements.txt` file.
 To install those libraries directly from the file you need to follow these steps (from cmd):
-- Create a virtual environment using the command `python -m venv path\environment_name`
+- Create a virtual environment using the command `> python -m venv path\environment_name`
 - Run the command `> pip install -r path\requirements.txt`
 - Activate the virtual environment using `> path\environment_name\scripts\activate`
 - Run the scripts from cmd in the active venv
